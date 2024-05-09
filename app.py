@@ -14,7 +14,7 @@ import google.generativeai as genai
 
 # WARNING: Do not share code with you API key hard coded in it.
 # Get your Gemini API key from: https://aistudio.google.com/app/apikey
-GOOGLE_API_KEY=""
+GOOGLE_API_KEY="AIzaSyDdLsOpU2AAgN0Lrt7BDrsR115Ew5TIbnE"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # The rate limits are low on this model, so you might need to switch to `gemini-pro`
@@ -28,12 +28,12 @@ next_message = ""
 next_image = ""
 
 def allowed_file(filename):
-    """Returns if a filename is supported via its extension"""
+    """Retorna-se um nome de arquivo for suportado por sua extensão"""
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    """Takes in a file, checks if it is valid, and saves it for the next request to the API"""
+    """Pega um arquivo, verifica se é válido e salva para a próxima solicitação à API"""
     global next_image
 
     if "file" not in request.files:
@@ -42,7 +42,7 @@ def upload_file():
     file = request.files["file"]
 
     if file.filename == "":
-        return jsonify(success=False, message="No selected file")
+        return jsonify(success=False, message="Nenhum arquivo selecionado")
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
 
@@ -53,19 +53,19 @@ def upload_file():
 
         return jsonify(
             success=True,
-            message="File uploaded successfully and added to the conversation",
+            message="Arquivo enviado com sucesso e adicionado à conversa",
             filename=filename,
         )
-    return jsonify(success=False, message="File type not allowed")
+    return jsonify(success=False, message="Tipo de arquivo não permitido")
 
 @app.route("/", methods=["GET"])
 def index():
-    """Renders the main homepage for the app"""
+    """Renderiza a página inicial principal do aplicativo"""
     return render_template("index.html", chat_history=chat_session.history)
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    """Takes in the message the user wants to send to the Gemini API, saves it"""
+    """Recebe a mensagem que o usuário deseja enviar para a API Gemini e a salva"""
     global next_message
     next_message = request.json["message"]
     print(chat_session.history)
@@ -74,7 +74,7 @@ def chat():
 
 @app.route("/stream", methods=["GET"])
 def stream():
-    """Streams the response from the serve for both multi-modal and plain text requests"""
+    """Transmite a resposta do serviço para solicitações multimodais e de texto simples"""
     def generate():
         global next_message
         global next_image
